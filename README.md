@@ -7,8 +7,7 @@ Este es el repositorio oficial de las sesiones sobre orquestadores para el Diplo
 ### Recursos
 
 - Presentación: [🪧 Google Slides](https://docs.google.com/presentation/d/1433yioRW6FQwErsZpM-PdCrGWtgEuPR9PzwipWBuq8o/pub?start=false&loop=false&delayms=3000)
-- Código: [/code](/code)
-    - Soluciones: [/code/solved](/code/solved) <br>(Las soluciones serán añadidas al final de las sesiones.)
+- DAGs: [/dags](/dags)
 
 
 ### Material adicional
