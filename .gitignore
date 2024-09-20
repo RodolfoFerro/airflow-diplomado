@@ -1,11 +1,10 @@
 # Extras
 .DS_Store
 .vscode
-runs/
-*.json
-*.ini
+docker-compose.yaml
+/logs
+/plugins
 *.csv
-*.pt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
