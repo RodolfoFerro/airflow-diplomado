@@ -1,27 +1,26 @@
 """This is an ML DAG with hyperparameter tuning."""
 
 import pendulum
-from airflow.decorators import dag, task
+from airflow.sdk import dag
+from airflow.sdk import task
 
 
-@dag(
-    schedule=None,
-    start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
-    catchup=False,
-    tags=["ejemplo", "ml"],
-)
+@dag(schedule=None,
+     start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
+     catchup=False,
+     tags=["ejemplo", "ml"],
+     max_active_tasks=1)
 def ml_flow():
     """This is the ML DAG."""
 
     @task(multiple_outputs=True)
-    def load_dataset(**kwargs):
+    def load_dataset(dag_run=None):
         """Loads MNIST Dataset and saves to .npy files."""
 
         import tensorflow as tf
         import numpy as np
 
-        # Send arguments to DAG
-        data = kwargs['dag_run'].conf
+        data = dag_run.conf if dag_run else {}
         print("[INFO]", data)
 
         mnist = tf.keras.datasets.mnist
@@ -106,15 +105,22 @@ def ml_flow():
         }
 
     @task
-    def train_model(dataset_paths: dict, model_params: dict, **kwargs):
+    def train_model(dataset_paths: dict, model_params: dict, dag_run=None):
         """Trains a classification model using preprocessed data and different
          hyperparameters."""
 
         import tensorflow as tf
         import numpy as np
 
-        # Send arguments to DAG
-        data = kwargs['dag_run'].conf
+        gpus = tf.config.list_physical_devices('GPU')
+        if gpus:
+            for gpu in gpus:
+                tf.config.experimental.set_memory_growth(gpu, True)
+        else:
+            tf.config.threading.set_intra_op_parallelism_threads(1)
+            tf.config.threading.set_inter_op_parallelism_threads(1)
+
+        data = dag_run.conf if dag_run else {}
         print("[INFO]", data)
 
         training_images = np.load(dataset_paths['training_images_final'])
@@ -169,7 +175,6 @@ def ml_flow():
 
         import pandas as pd
 
-        # Crear un dataframe con los resultados
         df = pd.DataFrame(results)
         df.to_csv('/tmp/benchmark_results.csv', index=False)
         print(df)
