@@ -3,7 +3,7 @@
 import pendulum
 
 from numpy.random import randint
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 
 
 @dag(
@@ -24,9 +24,11 @@ def sample_pipeline():
     def verifica_edad(edad_de_persona: int):
         if edad_de_persona >= 18:
             print("Es mayor de edad")
-        print("Es menor de edad")
+        else:
+            print("Es menor de edad")
 
     edad = genera_edad()
     verifica_edad(edad)
+
 
 sample_pipeline()

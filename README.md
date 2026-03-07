@@ -32,6 +32,15 @@ Este es el repositorio oficial de las sesiones sobre orquestadores para el Diplo
     RUN pip install --no-cache-dir -r /requirements.txt
     ```
 
+    Y un archivo `.env` con lo siguiente:
+    ```
+    AIRFLOW_UID=501
+    AIRFLOW_IMAGE_NAME=ml-container:0.0.2
+    _AIRFLOW_WWW_USER_USERNAME=airflow
+    _AIRFLOW_WWW_USER_PASSWORD=airflow
+    AIRFLOW__CORE__LOAD_EXAMPLES=false
+    ```
+
 2. Construimos la imagen:
     ```sh
     docker build . -f Dockerfile --pull --tag ml-container:0.0.2

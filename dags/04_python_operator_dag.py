@@ -1,8 +1,8 @@
 """Main data flow."""
 
-from airflow.decorators import dag, task
-from airflow.operators.bash import BashOperator
-from airflow.operators.python import PythonOperator
+from airflow.sdk import dag, task
+from airflow.providers.standard.operators.bash import BashOperator
+from airflow.providers.standard.operators.python import PythonOperator
 from pendulum import datetime
 
 
@@ -34,18 +34,15 @@ def machine_learning_task():
 
 
 # Define the DAG
-@dag(
-    dag_id="machine_learning_dag",
-    description="DAG to execute a simple ML task.",
-    start_date=datetime(2021, 1, 1, tz="UTC"),
-    schedule_interval="@daily",
-    catchup=False,
-    tags=["ml"]
-)
+@dag(dag_id="machine_learning_dag",
+     description="DAG to execute a simple ML task.",
+     start_date=datetime(2021, 1, 1, tz="UTC"),
+     schedule="@daily",
+     catchup=False,
+     tags=["ml", "ejemplo"])
 def ml_dag():
     """ML Dataflow to define DAG."""
 
-    # Define the tasks
     task_bash = BashOperator(task_id="bash_task",
                              bash_command="""
             echo "Ejecutando un script desde bash..."
@@ -59,10 +56,7 @@ def ml_dag():
         from sklearn.datasets import make_circles
         import pandas as pd
 
-        # Make 1000 examples
         n_samples = 1000
-
-        # Create circles
         x, y = make_circles(n_samples, noise=0.03, random_state=42)
         circles = pd.DataFrame({"x1": x[:, 0], "x2": x[:, 1], "label": y})
         circles.to_csv('circles.csv')
@@ -72,5 +66,6 @@ def ml_dag():
 
     # Set task dependencies
     task_bash >> dataset_creation_task() >> task_python
+
 
 ml_dag()
